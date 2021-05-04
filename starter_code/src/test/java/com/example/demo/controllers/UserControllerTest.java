@@ -57,7 +57,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testFindById() throws Exception{
+    public void findById() throws Exception{
         savedUser = new User();
         savedUser.setId(1);
 
@@ -69,7 +69,7 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
     }
     @Test
-    public void testFindByUserName() throws Exception{
+    public void findByUserName() throws Exception{
         savedUser = new User();
         savedUser.setUsername("Muchango");
 
@@ -82,7 +82,7 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
     }
     @Test
-    public void testCreateUser() {
+    public void createUser() {
         when(bCryptPasswordEncoder.encode("testPassword")).thenReturn("hashed");
         userResponseEntity = userController.createUser(createUserRequest);
         savedUser = userResponseEntity.getBody();
