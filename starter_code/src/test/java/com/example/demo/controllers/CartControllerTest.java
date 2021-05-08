@@ -105,4 +105,28 @@ MockitoAnnotations.initMocks(this);
         assertEquals(0, cartWithRemovedItem.getItems().size());
         assertEquals(user, cartWithRemovedItem.getUser());
     }
+
+    @Test
+    public void userNameNotFound() {
+        when(userRepository.findByUsername("Muthee")).thenReturn(user);
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+
+        modifyCartRequest.setUsername("test");
+
+        final ResponseEntity<Cart> cartResponseEntity = cartController.addTocart(modifyCartRequest);
+        assertNotNull(cartResponseEntity);
+        assertEquals(404, cartResponseEntity.getStatusCodeValue());
+    }
+
+    @Test
+    public void itemNotFound() {
+        when(userRepository.findByUsername(anyString())).thenReturn(user);
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+
+        modifyCartRequest.setItemId(2L);
+
+        final ResponseEntity<Cart> cartResponseEntity = cartController.removeFromcart(modifyCartRequest);
+        assertNotNull(cartResponseEntity);
+        assertEquals(404, cartResponseEntity.getStatusCodeValue());
+    }
 }
