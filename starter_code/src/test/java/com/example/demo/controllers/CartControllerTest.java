@@ -9,24 +9,20 @@ import com.example.demo.model.persistence.repositories.UserRepository;
 import com.example.demo.model.requests.ModifyCartRequest;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public class CartControllerTest {
     @Mock
     UserRepository userRepository;
@@ -37,7 +33,6 @@ public class CartControllerTest {
     @InjectMocks
     CartController cartController;
 
-    MockMvc mockMvc;
     ModifyCartRequest modifyCartRequest;
     User user;
     Cart cart;
@@ -45,10 +40,8 @@ public class CartControllerTest {
 
     @Before
     public void setUp(){
-        cartController = new CartController(userRepository, cartRepository, itemRepository);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(cartController).build();
-
+MockitoAnnotations.initMocks(this);
 
         item = new Item();
         item.setId(1L);
@@ -57,12 +50,10 @@ public class CartControllerTest {
         item.setPrice(BigDecimal.valueOf(23));
 
 
-        List<Item> itemList = new LinkedList<>();
-        itemList.add(item);
 
         cart = new Cart();
         cart.setId(1L);
-        cart.setItems(itemList);
+        cart.addItem(item);
 
         user = new User();
         user.setId(1);
@@ -79,20 +70,24 @@ public class CartControllerTest {
 
 
 
+
+
     }
 
     @Test
-    public void addToCart() throws Exception{
-//        Cart cartTOSave = new Cart();
-//        cartTOSave.setId(2L);
-//        when(userRepository.findByUsername(anyString())).thenReturn(user);
-//        when(cartRepository.save(any())).thenReturn(cart);
-//        ResponseEntity<Cart> cartResponseEntity = cartController.addTocart(modifyCartRequest);
-//        Cart savedCart = cartResponseEntity.getBody();
-//
-//        assertNotNull(cart);
-//        assertNotNull(cartResponseEntity);
-//        assertNotNull(savedCart);
+    public void addToCart() {
+        when(userRepository.findByUsername(anyString())).thenReturn(user);
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+
+        ResponseEntity<Cart> cartResponseEntity = cartController.addTocart(modifyCartRequest);
+        Cart savedCart = cartResponseEntity.getBody();
+
+        assertNotNull(cartResponseEntity);
+        assertEquals(200, cartResponseEntity.getStatusCodeValue());
+
+        assertNotNull(savedCart);
+        assertEquals(user, savedCart.getUser());
+        assertEquals(BigDecimal.valueOf(46), savedCart.getTotal());
     }
 
     @Test
