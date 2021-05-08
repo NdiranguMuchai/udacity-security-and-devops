@@ -41,7 +41,7 @@ public class CartControllerTest {
     @Before
     public void setUp(){
 
-MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.initMocks(this);
 
         item = new Item();
         item.setId(1L);
@@ -91,7 +91,7 @@ MockitoAnnotations.initMocks(this);
     }
 
     @Test
-  public  void removeFromCart(){
+    public  void removeFromCart(){
         when(userRepository.findByUsername(anyString())).thenReturn(user);
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
 
