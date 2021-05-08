@@ -91,7 +91,18 @@ MockitoAnnotations.initMocks(this);
     }
 
     @Test
-  public  void  deleteFromCart(){
+  public  void removeFromCart(){
+        when(userRepository.findByUsername(anyString())).thenReturn(user);
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
 
+        ResponseEntity<Cart> cartResponseEntity = cartController.removeFromcart(modifyCartRequest);
+        Cart cartWithRemovedItem = cartResponseEntity.getBody();
+
+        assertNotNull(cartResponseEntity);
+        assertEquals(200, cartResponseEntity.getStatusCodeValue());
+
+        assertNotNull(cartWithRemovedItem);
+        assertEquals(0, cartWithRemovedItem.getItems().size());
+        assertEquals(user, cartWithRemovedItem.getUser());
     }
 }
