@@ -77,4 +77,18 @@ public class ItemControllerTest {
         assertEquals("ki description tu", savedItem.getDescription());
         assertEquals(BigDecimal.valueOf(12), savedItem.getPrice());
     }
+
+    @Test
+    public void getItemsByName() {
+        when(itemRepository.findByName("Item")).thenReturn(items);
+
+        ResponseEntity<List<Item>> itemsResponseEntity = itemController.getItemsByName("Item");
+        List<Item> testList = itemsResponseEntity.getBody();
+
+        assertNotNull(itemsResponseEntity);
+        assertEquals(200, itemsResponseEntity.getStatusCodeValue());
+
+        assertNotNull(testList);
+        assertArrayEquals(items.toArray(), testList.toArray());
+    }
 }
