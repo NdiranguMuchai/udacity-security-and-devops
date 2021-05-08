@@ -14,9 +14,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -36,6 +38,8 @@ public class OrderControllerTest {
     private Cart cart;
     Item item;
     Item itemIngine;
+
+    List<Item> itemList;
 
     @Before
     public void setUp() {
@@ -63,13 +67,16 @@ public class OrderControllerTest {
 
         user.setCart(cart);
 
+        itemList = new LinkedList<>();
+        itemList.add(item);
+        itemList.add(itemIngine);
 
     }
 
     @Test
     public void submit() {
-        when(userRepository.findByUsername("Muthee")).thenReturn(user);
-        
+        when(userRepository.findByUsername(anyString())).thenReturn(user);
+
         ResponseEntity<UserOrder> userOrderResponseEntity = orderController.submit("Muthee");
         UserOrder testUserOrder = userOrderResponseEntity.getBody();
 
@@ -85,5 +92,49 @@ public class OrderControllerTest {
         verify(orderRepository).save(any(UserOrder.class));
     }
 
+    @Test
+    public void getOrdersForUser() {
+        when(userRepository.findByUsername(anyString())).thenReturn(user);
+
+        List<UserOrder> userOrders = createOrderHistory(user);
+        when(orderRepository.findByUser(user)).thenReturn(userOrders);
+
+        ResponseEntity<List<UserOrder>> response = orderController.getOrdersForUser("Muthee");
+        List<UserOrder> testUserOrders = response.getBody();
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+
+        assertNotNull(testUserOrders);
+        assertArrayEquals(userOrders.toArray(), testUserOrders.toArray());
+
+        verify(userRepository, times(1)).findByUsername("Muthee");
+        verify(orderRepository, times(1)).findByUser(user);
+
+    }
+
+
+    /**
+     * convenience method for creating user orders
+     */
+    private List<UserOrder> createOrderHistory(User user) {
+        UserOrder firstOrder = new UserOrder();
+        firstOrder.setId(1L);
+        firstOrder.setItems(itemList);
+        firstOrder.setUser(user);
+        firstOrder.setTotal(BigDecimal.valueOf(12 + 23));
+
+        UserOrder secondOrder = new UserOrder();
+        secondOrder.setId(2L);
+        secondOrder.setItems(itemList);
+        secondOrder.setUser(user);
+        secondOrder.setTotal(BigDecimal.valueOf(12 + 23));
+
+        List<UserOrder> userOrders = new ArrayList<>();
+        userOrders.add(firstOrder);
+        userOrders.add(secondOrder);
+
+        return userOrders;
+    }
 
 }
