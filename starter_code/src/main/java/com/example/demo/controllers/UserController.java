@@ -3,7 +3,8 @@ package com.example.demo.controllers;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ import com.example.demo.model.requests.CreateUserRequest;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-private final Logger logger = LogManager.getLogger(UserController.class);
+private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	private final UserRepository userRepository;
 	private  final CartRepository cartRepository;
